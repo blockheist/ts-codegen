@@ -68,14 +68,14 @@ export const createWasmQueryMethod = (
           t.returnStatement(
             t.callExpression(
               t.memberExpression(
-               t.memberExpression(
-                 t.memberExpression(
-                   t.thisExpression(),
-                   t.identifier('client')
-                 ),
-                 t.identifier('wasm')
-               ),
-               t.identifier('contractQuery')
+                t.memberExpression(
+                  t.memberExpression(
+                    t.thisExpression(),
+                    t.identifier('client')
+                  ),
+                  t.identifier('wasm')
+                ),
+                t.identifier('contractQuery')
               ),
               [
                 t.memberExpression(t.thisExpression(), t.identifier('contractAddress')),
@@ -247,133 +247,133 @@ export const createWasmExecMethod = (
       ] : CONSTANT_EXEC_PARAMS,
       t.blockStatement(
         [
-        // Create a key from menemonic
-        //  const key = new MnemonicKey(user.mnemonicKeyOptions)      
-        t.variableDeclaration(
-          'const',
-          [t.variableDeclarator(
-            t.identifier('key'), 
-            t.newExpression(
-               t.identifier('MnemonicKey'),
-               [
-                t.memberExpression(
+          // Create a key from menemonic
+          //  const key = new MnemonicKey(user.mnemonicKeyOptions)      
+          t.variableDeclaration(
+            'const',
+            [t.variableDeclarator(
+              t.identifier('key'),
+              t.newExpression(
+                t.identifier('MnemonicKey'),
+                [
                   t.memberExpression(
-                    t.thisExpression(),
-                    t.identifier('user'),
-                 ),
-                  t.identifier('mnemonicKeyOptions'),
-                ),
-               ]
-            )
-          )]
-        ),
-
-        // Create a wallet from key
-        //  const wallet = client.wallet(key)    
-        t.variableDeclaration(
-          'const',
-          [t.variableDeclarator(
-            t.identifier('wallet'), 
-            t.callExpression(
-              t.memberExpression(
-                t.memberExpression(
-                  t.thisExpression(),
-                  t.identifier('client')
-                ),
-                t.identifier('wallet')
-              ),
-              [
-                t.identifier('key')
-              ]
-            )
-          )]
-        ),
-
-        // Create contract execute message
-        //  const msg = new MsgExecuteContract(user.address, contractAddress, executeMsg)      
-        t.variableDeclaration(
-          'const',
-          [t.variableDeclarator(
-            t.identifier('msg'), 
-            t.newExpression(
-               t.identifier('MsgExecuteContract'),
-               [
-                t.memberExpression(
-                  t.memberExpression(
-                    t.thisExpression(),
-                    t.identifier('user'),
+                    t.memberExpression(
+                      t.thisExpression(),
+                      t.identifier('user'),
+                    ),
+                    t.identifier('mnemonicKeyOptions'),
                   ),
-                  t.identifier('address')
-                ),
-                t.memberExpression(
-                  t.thisExpression(),
-                  t.identifier('contractAddress')
-                ),
-                t.objectExpression(
-                  [
-                    t.objectProperty(
-                      t.identifier(underscoreName),
-                      t.objectExpression([
-                        ...args
-                      ])
-                    )
+                ]
+              )
+            )]
+          ),
 
+          // Create a wallet from key
+          //  const wallet = client.wallet(key)    
+          t.variableDeclaration(
+            'const',
+            [t.variableDeclarator(
+              t.identifier('wallet'),
+              t.callExpression(
+                t.memberExpression(
+                  t.memberExpression(
+                    t.thisExpression(),
+                    t.identifier('client')
+                  ),
+                  t.identifier('wallet')
+                ),
+                [
+                  t.identifier('key')
+                ]
+              )
+            )]
+          ),
+
+          // Create contract execute message
+          //  const execMsg = new MsgExecuteContract(user.address, contractAddress, executeMsg)      
+          t.variableDeclaration(
+            'const',
+            [t.variableDeclarator(
+              t.identifier('execMsg'),
+              t.newExpression(
+                t.identifier('MsgExecuteContract'),
+                [
+                  t.memberExpression(
+                    t.memberExpression(
+                      t.thisExpression(),
+                      t.identifier('user'),
+                    ),
+                    t.identifier('address')
+                  ),
+                  t.memberExpression(
+                    t.thisExpression(),
+                    t.identifier('contractAddress')
+                  ),
+                  t.objectExpression(
+                    [
+                      t.objectProperty(
+                        t.identifier(underscoreName),
+                        t.objectExpression([
+                          ...args
+                        ])
+                      )
+
+                    ]
+                  ),
+                  t.identifier('coins'),
+                ]
+              )
+            )]
+          ),
+
+          // Create tx options data
+          //  const txOptions = {msgs: [execMsg]}
+          t.variableDeclaration(
+            'const',
+            [t.variableDeclarator(
+              t.identifier('txOptions'),
+              t.identifier("{ msgs: [execMsg] }"),
+            )]
+          ),
+
+          // Create and sign transaction
+          //  const tx = await wallet.createAndSignTx(txOptions);
+          t.variableDeclaration(
+            'const',
+            [t.variableDeclarator(
+              t.identifier('tx'),
+              t.awaitExpression(
+                t.callExpression(
+                  t.memberExpression(
+                    t.identifier('wallet'),
+                    t.identifier('createAndSignTx')
+                  ),
+                  [
+                    t.identifier('txOptions')
                   ]
                 ),
-                t.identifier('coins'),
-               ]
-            )
-          )]
-        ),
+              )
+            )]
+          ),
 
-        // Create tx options data
-        //  const txOptions = {msgs: [msg]}
-        t.variableDeclaration(
-          'const',
-          [t.variableDeclarator(
-            t.identifier('txOptions'), 
-            t.identifier("{ msgs: [msg] }"),
-          )]
-        ),
-
-        // Create and sign transaction
-        //  const tx = await wallet.createAndSignTx(txOptions);
-        t.variableDeclaration(
-          'const',
-          [t.variableDeclarator(
-            t.identifier('tx'), 
-            t.awaitExpression(
-             t.callExpression(
-                t.memberExpression(
-                 t.identifier('wallet'),
-                  t.identifier('createAndSignTx')
-               ),
-               [
-                  t.identifier('txOptions')
-               ]
-              ),
-            )
-          )]
-        ),
-
-        // Broadcast transaction
-        //  return await client.tx.broadcast(tx);
-        t.returnStatement(
+          // Broadcast transaction
+          //  return await client.tx.broadcast(tx);
+          t.returnStatement(
             t.awaitExpression(
               t.callExpression(
                 t.memberExpression(
-                 t.memberExpression(
-                   t.memberExpression(
+                  t.memberExpression(
+                    t.memberExpression(
                       t.thisExpression(),
                       t.identifier('client')
-                   ),
+                    ),
                     t.identifier('tx'),
-                   ),
-                   t.identifier('broadcast'),
-                 ),
-              [
-                t.identifier('tx')
-              ]
+                  ),
+                  t.identifier('broadcast'),
+                ),
+                [
+                  t.identifier('tx')
+                ]
               )
             )
           )
